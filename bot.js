@@ -22,9 +22,15 @@ function readLinksFile() {
 function saveLinksFile(data) {
     fs.writeFileSync(linksFile, JSON.stringify(data, null, 4), 'utf8')
 }
-//شناسه کانال پابلیک
+// تابع بررسی عضویت در کانال‌ها
 function checkPublicChannelMembership(userId) {
-    return bot.getChatMember(-1001956864682, userId)
+    const channel1Id = -1001956864682 // شناسه کانال اول
+    const channel2Id = -1002111615139 // شناسه کانال دوم
+
+    const channel1Membership = bot.getChatMember(channel1Id, userId)
+    const channel2Membership = bot.getChatMember(channel2Id, userId)
+
+    return Promise.all([channel1Membership, channel2Membership])
 }
 
 //منطق ساخت لینک
@@ -102,7 +108,7 @@ function sendTelegramRequest(userId) {
 let startCounter = {}
 
 //کارهای دکمه start
-bot.onText(/\/start/, (msg) => {
+bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id
     const userId = msg.from.id
 
@@ -124,18 +130,33 @@ bot.onText(/\/start/, (msg) => {
             startCounter[userId] = 0
         }, blockDuration * 1000)
     } else {
-        checkPublicChannelMembership(userId)
-            .then((publicChatMember) => {
+        try {
+            const publicChatMemberships = await checkPublicChannelMembership(userId)
+            const publicChat1Member = publicChatMemberships[0]
+            const publicChat2Member = publicChatMemberships[1]
+
+            const isMemberChannel1 = ['member', 'creator', 'administrator'].includes(publicChat1Member.status)
+            const isMemberChannel2 = ['member', 'creator', 'administrator'].includes(publicChat2Member.status)
+
+            if (!isMemberChannel1 && !isMemberChannel2) {
+                bot.sendMessage(chatId, 'شما هنوز عضو کانال‌های پابلیک نشده‌اید. برای عضویت، از لینک‌های زیر استفاده کنید:\nhttps://t.me/js_challenges\nhttps://t.me/Tech_Nuggets')
+            } else if (!isMemberChannel1) {
+                bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک اول نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/js_challenges')
+            } else if (!isMemberChannel2) {
+                bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک دوم نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/Tech_Nuggets')
+            } else {
                 const userExists = checkUserExistence(userId)
-                if (publicChatMember && (publicChatMember.status === 'member' || publicChatMember.status === 'creator' || publicChatMember.status === 'administrator')) {
+
+                if (publicChat1Member && (publicChat1Member.status === 'member' || publicChat1Member.status === 'creator' || publicChat1Member.status === 'administrator')) {
                     if (userExists) {
                         const userLinkData = readLinksFile().users[userId]
                         const currentTime = Math.floor(Date.now() / 1000)
+
                         if (userLinkData.expireDate < currentTime) {
-                            removeUserData(userId) // حذف اطلاعات کاربر اگر زمان گذشته باشد
-                            createOrUpdatePrivateGroupInviteLink(userId) // ایجاد لینک جدید برای کاربر
+                            removeUserData(userId)
+                            createOrUpdatePrivateGroupInviteLink(userId)
                                 .then((inviteLink) => {
-                                    const expireDate = Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 10 دقیقه اعتبار لینک
+                                    const expireDate = Math.floor(Date.now() / 1000) + (24 * 60 * 60)
                                     const userData = {
                                         privateGroupInviteLink: inviteLink,
                                         expireDate: expireDate
@@ -170,9 +191,9 @@ bot.onText(/\/start/, (msg) => {
                             bot.sendMessage(chatId, `شما قبلاً لینک دعوت گرفته‌اید:\n${userLinkData.privateGroupInviteLink}\nزمان باقی‌مانده برای درخواست مجدد لینک: ${timeMessage} ⏳`)
                         }
                     } else {
-                        createOrUpdatePrivateGroupInviteLink(userId) // ایجاد لینک جدید برای کاربر
+                        createOrUpdatePrivateGroupInviteLink(userId)
                             .then((inviteLink) => {
-                                const expireDate = Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 ساعت
+                                const expireDate = Math.floor(Date.now() / 1000) + (24 * 60 * 60)
                                 const userData = {
                                     privateGroupInviteLink: inviteLink,
                                     expireDate: expireDate
@@ -192,9 +213,9 @@ bot.onText(/\/start/, (msg) => {
                 } else {
                     bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/js_challenges')
                 }
-            })
-            .catch((err) => {
-                console.error(err)
-            })
+            }
+        } catch (err) {
+            console.error(err)
+        }
     }
 })
