@@ -26,11 +26,14 @@ function saveLinksFile(data) {
 function checkPublicChannelMembership(userId) {
     const channel1Id = -1001956864682 // شناسه کانال اول
     const channel2Id = -1002111615139 // شناسه کانال دوم
+    const channel3Id = -1002139501810 // شناسه کانال سوم
 
     const channel1Membership = bot.getChatMember(channel1Id, userId)
     const channel2Membership = bot.getChatMember(channel2Id, userId)
+    const channel3Membership = bot.getChatMember(channel3Id, userId)
 
-    return Promise.all([channel1Membership, channel2Membership])
+
+    return Promise.all([channel1Membership, channel2Membership, channel3Membership])
 }
 
 //منطق ساخت لینک
@@ -134,17 +137,24 @@ bot.onText(/\/start/, async (msg) => {
             const publicChatMemberships = await checkPublicChannelMembership(userId)
             const publicChat1Member = publicChatMemberships[0]
             const publicChat2Member = publicChatMemberships[1]
+            const publicChat3Member = publicChatMemberships[2]
+
 
             const isMemberChannel1 = ['member', 'creator', 'administrator'].includes(publicChat1Member.status)
             const isMemberChannel2 = ['member', 'creator', 'administrator'].includes(publicChat2Member.status)
+            const isMemberChannel3 = ['member', 'creator', 'administrator'].includes(publicChat3Member.status)
 
-            if (!isMemberChannel1 && !isMemberChannel2) {
-                bot.sendMessage(chatId, 'شما هنوز عضو کانال‌های پابلیک نشده‌اید. برای عضویت، از لینک‌های زیر استفاده کنید:\nhttps://t.me/js_challenges\nhttps://t.me/Tech_Nuggets')
+
+            if (!isMemberChannel1 && !isMemberChannel2 && !isMemberChannel3) {
+                bot.sendMessage(chatId, 'شما هنوز عضو کانال‌های پابلیک نشده‌اید. برای عضویت، از لینک‌های زیر استفاده کنید:\nhttps://t.me/js_challenges\nhttps://t.me/Tech_Nuggets\nhttps://t.me/Code_Beats')
             } else if (!isMemberChannel1) {
                 bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک اول نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/js_challenges')
             } else if (!isMemberChannel2) {
                 bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک دوم نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/Tech_Nuggets')
+            } else if (!isMemberChannel3) {
+                bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک سوم نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/Code_Beats')
             } else {
+
                 const userExists = checkUserExistence(userId)
 
                 if (publicChat1Member && (publicChat1Member.status === 'member' || publicChat1Member.status === 'creator' || publicChat1Member.status === 'administrator')) {
