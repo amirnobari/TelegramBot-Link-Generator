@@ -150,7 +150,7 @@ bot.onText(/\/start/, async (msg) => {
             } else if (!isMemberChannel1) {
                 bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک اول نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/js_challenges')
             } else if (!isMemberChannel2) {
-                bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک دوم نشده‌اید. برای عضویت، از لینک زیر استفاد:\nhttps://t.me/CSSMarkup')
+                bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک اول نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/CSSMarkup')
             } else if (!isMemberChannel3) {
                 bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک سوم نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/Code_Beats')
             } else {
