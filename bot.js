@@ -146,11 +146,11 @@ bot.onText(/\/start/, async (msg) => {
 
 
             if (!isMemberChannel1 && !isMemberChannel2 && !isMemberChannel3) {
-                bot.sendMessage(chatId, 'شما هنوز عضو کانال‌های پابلیک نشده‌اید. برای عضویت، از لینک‌های زیر استفاده کنید:\nhttps://t.me/js_challenges\nhttps://t.me/Tech_Nuggets\nhttps://t.me/Code_Beats')
+                bot.sendMessage(chatId, 'شما هنوز عضو کانال‌های پابلیک نشده‌اید. برای عضویت، از لینک‌های زیر استفاده کنید:\nhttps://t.me/js_challenges\nhttps://t.me/CSSMarkup\nhttps://t.me/Code_Beats')
             } else if (!isMemberChannel1) {
                 bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک اول نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/js_challenges')
             } else if (!isMemberChannel2) {
-                bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک دوم نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/Tech_Nuggets')
+                bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک دوم نشده‌اید. برای عضویت، از لینک زیر استفاد:\nhttps://t.me/CSSMarkup')
             } else if (!isMemberChannel3) {
                 bot.sendMessage(chatId, 'شما هنوز عضو کانال پابلیک سوم نشده‌اید. برای عضویت، از لینک زیر استفاده کنید:\nhttps://t.me/Code_Beats')
             } else {
